@@ -61,7 +61,3 @@ document.getElementById("checkNFT").onclick = async () => {
   }
 };
 
-.web3 {
-  color: #4f46e5;   /* biru-ungu Web3 vibe */
-  font-weight: bold;
-}
