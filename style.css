@@ -64,10 +64,18 @@ button {
   color: #ffffff;
   cursor: pointer;
   margin-top: 12px;
+
+  /* animasi */
+  transition: 
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
 }
 
 button:hover {
-  opacity: 0.9;
+  transform: scale(1.06);
+  box-shadow: 0 10px 25px rgba(242, 46, 157, 0.45);
+  opacity: 0.95;
 }
 
 /* Input */
