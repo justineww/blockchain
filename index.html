@@ -1,36 +1,259 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>CampusPoint & Certificate Web3App</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/x-icon" href="icon.png">
-</head>
-<body>
-  <div class="container">
-    <h1>Campus <span class="web3">Web3</span> System</h1>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Web3 System</title>
+    <link rel="icon" href="icon.png" type="image/png" />
 
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:..."
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+  </head>
+  <body>
+    <div id="studentView" class="student-layout">
+      <nav class="navbar">
+        <div class="nav-brand">
+          <img src="icon.png" alt="Logo" class="logo-img" />
+          <span>Campus<span class="highlight">Point</span></span>
+        </div>
+        <div class="nav-links">
+          <div class="wallet-badge hidden" id="stdWalletBadge">
+            <span id="stdAddress">0x...</span>
+            <span class="dot-separator">•</span>
+            <span id="stdBalance" class="balance-text">0 CPNT</span>
+          </div>
+          <button onclick="connectWallet()" id="btnConnectStd" class="btn-pill">
+            Hubungkan Wallet
+          </button>
+        </div>
+      </nav>
 
-    <button id="connectBtn">Connect Wallet</button>
+      <header class="hero-section">
+        <div class="hero-content">
+          <div class="badge-role">🎓 Portal Mahasiswa</div>
+          <h1>
+            Sertifikasi Digital & <br /><span class="text-gradient"
+              >Rekam Jejak Akademik</span
+            >
+          </h1>
+          <p>
+            Kumpulkan poin keaktifan dan klaim sertifikat kegiatan Anda secara
+            transparan di Blockchain.
+          </p>
 
-    <div id="walletInfo">
-      <p><b>Address:</b> <span id="address">-</span></p>
-      <p><b>Network:</b> <span id="network">-</span></p>
-      <p><b>CampusPoint Balance:</b> <span id="balance">-</span></p>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <h3 id="statCertCount">0</h3>
+              <small>Sertifikat Dimiliki</small>
+            </div>
+            <div class="stat-separator"></div>
+            <div class="stat-item">
+              <h3 id="statPoints">0</h3>
+              <small>Poin Keaktifan</small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="student-container">
+        <div class="pill-tabs">
+          <button
+            class="pill-btn active"
+            onclick="showStudentTab('viewMyCerts')"
+          >
+            🏆 Sertifikat Saya
+          </button>
+          <button class="pill-btn" onclick="showStudentTab('viewActivities')">
+            📢 Kegiatan Kampus
+          </button>
+        </div>
+
+        <div id="viewMyCerts" class="tab-view fade-in">
+          <div class="section-header">
+            <h2>Koleksi Prestasi</h2>
+            <button onclick="loadMyNFTs()" class="btn-text">
+              🔄 Segarkan Data
+            </button>
+          </div>
+          <div id="certGrid" class="cards-grid">
+            <div class="empty-placeholder">
+              <div class="icon">🔒</div>
+              <p>Hubungkan wallet untuk melihat sertifikat Anda.</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="viewActivities" class="tab-view hidden fade-in">
+          <div class="section-header">
+            <h2>Papan Informasi Kegiatan</h2>
+            <button onclick="loadAllActivitiesStudent()" class="btn-text">
+              🔄 Segarkan Data
+            </button>
+          </div>
+          <div id="studentActivityList" class="list-layout">
+            <div class="empty-placeholder">Memuat kegiatan...</div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="student-footer">
+        <p>Powered by Ethereum Blockchain • Campus Web3 2025</p>
+      </footer>
     </div>
 
-    <hr>
+    <div id="adminView" class="admin-layout hidden">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h3>Admin<span class="highlight">Panel</span></h3>
+          <p>Management System</p>
+        </div>
 
-    <h2>Cek Sertifikat (NFT)</h2>
+        <div class="sidebar-menu">
+          <button class="menu-item active" onclick="showAdminTab('admAct')">
+            📝 Kelola Kegiatan
+          </button>
+          <button class="menu-item" onclick="showAdminTab('admRew')">
+            💸 Kirim Poin
+          </button>
+          <button class="menu-item" onclick="showAdminTab('admMint')">
+            🏅 Cetak NFT
+          </button>
+        </div>
 
-    <input type="number" id="tokenIdInput" placeholder="Masukkan Token ID">
-    <button id="checkNFT">Cek Sertifikat</button>
+        <div class="sidebar-bottom">
+          <div class="admin-info">
+            <small>Logged in as:</small>
+            <p id="admAddress">0x...</p>
+          </div>
+          <button onclick="connectWallet()" class="btn-outline-danger">
+            Disconnect / Switch
+          </button>
+        </div>
+      </aside>
 
-    <div id="nftInfo">
-      <p><b>Owner:</b> <span id="nftOwner">-</span></p>
-      <p><b>Token URI:</b> <span id="nftURI">-</span></p>
+      <main class="admin-content">
+        <header class="admin-topbar">
+          <h2>Dashboard Administrator</h2>
+          <div class="net-badge" id="admNetwork">Network: -</div>
+        </header>
+
+        <div class="admin-workspace">
+          <div id="admAct" class="admin-pane">
+            <div class="card">
+              <h4>Buat Kegiatan Baru</h4>
+              <div class="row">
+                <input
+                  type="text"
+                  id="actName"
+                  placeholder="Nama Kegiatan"
+                  class="input-std"
+                />
+                <input
+                  type="number"
+                  id="actReward"
+                  placeholder="Poin"
+                  class="input-std"
+                  style="width: 100px"
+                />
+                <button onclick="createActivity()" class="btn-primary">
+                  Simpan
+                </button>
+              </div>
+            </div>
+            <div class="card mt-20">
+              <div class="flex-between">
+                <h4>Daftar Kegiatan</h4>
+                <button onclick="loadActivityList()" class="btn-sm">
+                  Refresh
+                </button>
+              </div>
+              <div id="adminActivityList" class="admin-list-box"></div>
+            </div>
+          </div>
+
+          <div id="admRew" class="admin-pane hidden">
+            <div class="card">
+              <h4>Distribusi Poin</h4>
+              <label>ID Kegiatan</label>
+              <input type="number" id="rewardActId" class="input-std" />
+              <label>Wallet Mahasiswa</label>
+              <input
+                type="text"
+                id="rewardStudentAddr"
+                class="input-std"
+                placeholder="0x..."
+              />
+              <button onclick="rewardStudent()" class="btn-primary mt-10">
+                Kirim Poin
+              </button>
+            </div>
+          </div>
+
+          <div id="admMint" class="admin-pane hidden">
+            <div class="card">
+              <h4>Penerbitan Sertifikat (NFT)</h4>
+              <label>ID Kegiatan</label>
+              <input type="number" id="mintActId" class="input-std" />
+              <label>Wallet Mahasiswa</label>
+              <input
+                type="text"
+                id="mintStudentAddr"
+                class="input-std"
+                placeholder="0x..."
+              />
+              <label>Metadata URI</label>
+              <input
+                type="text"
+                id="mintUri"
+                class="input-std"
+                placeholder="https://..."
+              />
+              <button onclick="mintCertificate()" class="btn-primary mt-10">
+                Cetak Sertifikat
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
-  </div>
-</body>
 
+    <div id="detailModal" class="modal-backdrop hidden">
+      <div class="modal-window">
+        <div class="modal-header">
+          <h3>Detail Sertifikat</h3>
+          <button onclick="closeModal()" class="btn-close">&times;</button>
+        </div>
+
+        <div class="modal-tabs">
+          <button class="modal-tab active" onclick="switchModalView('preview')">
+            👁️ Tampilan Visual
+          </button>
+          <button class="modal-tab" onclick="switchModalView('json')">
+            📄 Source Code (JSON)
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div id="modalViewPreview">
+            <div id="modalContentPreview">Loading...</div>
+          </div>
+
+          <div id="modalViewJson" class="hidden">
+            <div class="json-container">
+              <pre id="modalJsonCode">Loading JSON...</pre>
+            </div>
+            <p class="json-note">
+              Ini adalah data mentah yang tersimpan di IPFS.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
 </html>
