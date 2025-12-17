@@ -372,6 +372,10 @@ body {
 #admAddress {
   color: white;
   font-family: monospace;
+  word-break: break-all;
+  white-space: normal;
+  font-size: 16px;
+  line-height: 1.2;
 }
 .btn-outline-danger {
   width: 100%;
@@ -381,6 +385,20 @@ body {
   padding: 8px;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.btn-outline-light {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 5px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btn-outline-light:hover {
+  border-color: var(--primary);
+  color: white;
 }
 
 .admin-content {

@@ -66,7 +66,8 @@ async function connectWallet() {
 // Setup Tampilan Admin
 function setupAdminUI(address, chainId) {
   document.getElementById("adminView").classList.remove("hidden");
-  document.getElementById("admAddress").innerText = address;
+  document.getElementById("admAddress").innerText =
+    address.substring(0, 6) + "..." + address.substring(38);
   document.getElementById("admNetwork").innerText = "Chain ID: " + chainId;
   loadActivityList(); // Load list admin
 }
